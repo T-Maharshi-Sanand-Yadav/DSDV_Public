@@ -1,0 +1,158 @@
+Step: 1
+
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    19:51:32 05/30/2022 
+// Design Name: 
+// Module Name:    JKFF_POSEDGE_TRIGGER 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+module JKFF_POSEDGE_TRIGGER(q,qbar,j,k,clk);
+output reg q=1'b0;
+output reg qbar=1'b1;
+input j,k,clk;
+always@(posedge clk)
+
+if(clk==0)
+begin
+q=q;
+q=qbar;
+end
+
+else if((j==0)&(k==0)&(clk==1))
+begin
+	q=q;
+	qbar=qbar;
+end
+	
+else if((j==0)&(k==1)&(clk==1))
+begin
+	q=0;
+	qbar=1;
+end
+
+else if((j==1)&(k==0)&(clk==1))
+begin
+	q=1;
+	qbar=0;
+end
+
+else if((j==1)&(k==1)&(clk==1))
+begin
+	q=~q;
+	qbar=~qbar;
+end
+
+endmodule
+
+...........................................................................................................................................................
+
+Step 2:
+
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    12:17:45 06/14/2022 
+// Design Name: 
+// Module Name:    synchronous_2_bit_up_down_counter_jk 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+module synchronous_2_bit_up_down_counter_jk(q,qbar,j,k,clk,m);
+output [1:0]q,qbar;
+input [1:0]j,k;
+input clk,m;
+JKFF_POSEDGE_TRIGGER jkff0(q[0],qbar[0],1'b1,1'b1,clk);
+JKFF_POSEDGE_TRIGGER jkff1(q[1],qbar[1],(m^q[0]),(m^q[0]),clk);
+endmodule
+
+...........................................................................................................................................................
+
+Step 3 : Test Bench
+
+`timescale 1ns / 1ps
+
+////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer:
+//
+// Create Date:   12:22:08 06/14/2022
+// Design Name:   synchronous_2_bit_up_down_counter_jk
+// Module Name:   E:/VI SEM DSDV Lab Execution/synchronous_2_bit_up_down_counter_jk/synchronous_2_bit_up_down_counter_jk_tb.v
+// Project Name:  synchronous_2_bit_up_down_counter_jk
+// Target Device:  
+// Tool versions:  
+// Description: 
+//
+// Verilog Test Fixture created by ISE for module: synchronous_2_bit_up_down_counter_jk
+//
+// Dependencies:
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+////////////////////////////////////////////////////////////////////////////////
+
+module synchronous_2_bit_up_down_counter_jk_tb;
+
+	// Inputs
+	reg [1:0] j;
+	reg [1:0] k;
+	reg clk;
+	reg m;
+
+	// Outputs
+	wire [1:0] q;
+	wire [1:0] qbar;
+
+	// Instantiate the Unit Under Test (UUT)
+	synchronous_2_bit_up_down_counter_jk uut (
+		.q(q), 
+		.qbar(qbar), 
+		.j(j), 
+		.k(k), 
+		.clk(clk), 
+		.m(m)
+	);
+
+	initial 
+	begin
+	$monitor($time,"clk=%b,m=%b,j=%b,k=%b,q=%b,qbar=%b,m",clk,m,j,k,q,qbar);
+		// Initialize Inputs
+		j = 0;
+		k = 0;
+		clk = 0;
+		m = 0;
+	end
+      always #140 m = m + 1;
+		always #20 clk = clk + 1;
+		always #10 j = j + 1;
+		always #5 k = k + 1;
+endmodule
+
+
